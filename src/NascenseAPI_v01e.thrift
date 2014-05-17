@@ -3,7 +3,7 @@ include "shared.thrift"
 */
 namespace cpp emInterfaces
 namespace csharp emInterfaces
-
+namespace java emInterfaces
 
 enum emExceptionType
 {
