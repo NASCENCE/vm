@@ -5,18 +5,22 @@
   <description>NASCENCE Java API</description>
 
   <property name="src" location="src" />
-  <property name="gen" location="gen-java" />
   <property name="build" location="build" />
+  <property name="emi" location="emInterfaces" />
 
+  <!-- target name="makeDirs">
+    <mkdir dir="${src}/${emi}"/>
+  </target -->
+  
   <target name="generate">
     <!-- Generate the NASCENCE thrift source -->
     <exec executable="thrift" failonerror="true">
-      <arg line="--gen java NascenseAPI_v01d.thrift"/>
+      <arg line="-out ${src} --gen java ${src}/NascenseAPI_v01e.thrift"/>
     </exec>
   </target>
 
   <target name="dist" depends="generate">
-    <jar destfile="nascence-api.jar" basedir="${gen}">
+    <jar destfile="nascence-api.jar" basedir="${src}/emInterfaces">
       
     </jar>
   </target>
