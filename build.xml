@@ -1,0 +1,29 @@
+<!--
+  NASCENCE - Thrift - Java library builder
+-->
+<project name="nascence-api" default="dist">
+  <description>NASCENCE Java API</description>
+
+  <property name="src" location="src" />
+  <property name="gen" location="gen-java" />
+  <property name="build" location="build" />
+
+  <target name="generate">
+    <!-- Generate the NASCENCE thrift source -->
+    <exec executable="thrift" failonerror="true">
+      <arg line="--gen java NascenseAPI_v01d.thrift"/>
+    </exec>
+  </target>
+
+  <target name="dist" depends="generate">
+    <jar destfile="nascence-api.jar" basedir="${gen}">
+      
+    </jar>
+  </target>
+
+  <target name="clean">
+    <delete dir="${gen}"/>
+    <delete file="nascence-api.jar" />
+  </target>
+
+</project>
