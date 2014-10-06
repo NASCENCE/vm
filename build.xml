@@ -1,18 +1,29 @@
 <!--
-  NASCENCE - Thrift - Java library builder
+  NASCENCE - Virtual Material
 -->
-<project name="VirtualMaterial" default="api-dist">
+<project name="VirtualMaterial" default="vm-dist">
   <description>NASCENCE Java API</description>
 
   <property name="src" location="src" />
   <property name="build" location="build" />
   <property name="emi" location="emInterfaces" />
   <property name="lib" location="lib" />
+  <property name="dist" location="dist" />
+
 
   <target name="make-dirs">
     <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="${gen}"/>
+    <delete dir="${dist}" />
+    <delete dir="${build}" />
   </target>
   
+<!-- Nascence API-->
+
   <target name="api-generate" depends="make-dirs">
     <!-- Generate the NASCENCE thrift source -->
     <exec executable="thrift" failonerror="true">
@@ -33,23 +44,43 @@
   </target>
 
   <target name="api-dist" depends="api-compile">
-    <jar destfile="${lib}/nascence-api.jar" basedir="${build}/emInterfaces" />
+    <jar destfile="${dist}/nascence-api.jar" basedir="${build}" includes="emInterfaces/**" />
   </target>
+
+<!-- Virtual Material -->
 
   <target name="vm-compile" depends="api-dist,make-dirs">
     <javac srcdir="${src}"
          destdir="${build}"
          includes="nascence/**"
-         classpath="./nascence-api.jar"
-         debug="on"
-    />      
-  
+         debug="on">
 
+      <classpath>
+        <fileset dir="${lib}">  
+          <include name="**/*.jar" />  
+          <include name="${dist}/nascence-api.jar" />
+        </fileset>
+      </classpath>  
+
+    </javac>      
   </target>
 
-  <target name="clean">
-    <delete dir="${gen}"/>
-    <delete file="${lib}/nascence-api.jar" />
+  <target name="vm-dist" depends="vm-compile">
+    <jar destfile="${dist}/virtual-material.jar" basedir="${build}" includes="nascence/**" />
+  </target>
+
+  <target name="vm-run">  
+    <java classname="nascence.vm.thrift.VirtualMaterialServer">
+    <classpath>
+      <fileset dir="${lib}">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${dist}">
+        <include name="*.jar"/>
+      </fileset>
+    </classpath>
+
+    </java>      
   </target>
 
 </project>

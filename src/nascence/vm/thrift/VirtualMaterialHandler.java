@@ -127,4 +127,12 @@ public class VirtualMaterialHandler implements emEvolvableMotherboard.Iface{
 		
 	}
 
+
+	@Override
+	public void setConfigRegister(int index, int value) throws emException,
+			TException {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
