@@ -70,7 +70,7 @@
   </target>
 
   <target name="vm-run">  
-    <java classname="nascence.vm.thrift.VirtualMaterialServer">
+    <java classname="nascence.vm.thrift.VirtualMaterialServer" fork="true">
     <classpath>
       <fileset dir="${lib}">
         <include name="*.jar"/>
