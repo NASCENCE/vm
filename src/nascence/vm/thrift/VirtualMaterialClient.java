@@ -21,36 +21,47 @@ import org.apache.thrift.transport.TTransport;
  * - to provide a wrapper for Mathematica, which does not have a thrift connector, but can call java methods natively 
  */
 
-
 import emInterfaces.emEvolvableMotherboard;
 
 public class VirtualMaterialClient {
-	public static void main(String[] args) {
-		String url = "localhost";
+	emEvolvableMotherboard.Client client;
+	TTransport transport;
 
-		if (args.length > 1) {
-			url = args[0];
-		}
-
+	/**
+	 * Constructor that can be called from any other program. Connects to a
+	 * virtual material client and to a log server.
+	 */
+	public VirtualMaterialClient(String url, int portNumber) {
 		try {
-			TTransport transport;
-
-			transport = new TSocket(url, 9090);
+			transport = new TSocket(url, portNumber);
 			transport.open();
 
 			TProtocol protocol = new TBinaryProtocol(transport);
-			emEvolvableMotherboard.Client client = new emEvolvableMotherboard.Client(
-					protocol);
-
-			test(client);
-
-			transport.close();
+			client = new emEvolvableMotherboard.Client(protocol);
 		} catch (TException x) {
 			x.printStackTrace();
 		}
 	}
+	public void closeConnection(){
+		transport.close();
 
-	private static void test(emEvolvableMotherboard.Client client)
+	}
+
+	public static void main(String[] args) {
+        // localhost test
+		VirtualMaterialClient vmc = new VirtualMaterialClient("localhost",9090);
+   	    try {
+			vmc.test();
+		} catch (TException e) {
+   		    e.printStackTrace();
+		}
+
+		vmc.closeConnection();
+		
+		
+	}
+
+	void test()
 			throws TException {
 		client.ping(); // ping the board
 		System.out.println(client.getMotherboardID()); // get it's ID
@@ -59,7 +70,8 @@ public class VirtualMaterialClient {
 		local.genVarElmanRandom(8, 32, 8, 5.0, 0.5, false); // at random
 
 		byte[] ar = local.serializeToByteArray(); // get the weights
-		client.reprogramme(ByteBuffer.wrap(ar), ar.length); // programme the board
+		client.reprogramme(ByteBuffer.wrap(ar), ar.length); // programme the
+															// board
 
 	}
 }
