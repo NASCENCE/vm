@@ -1,6 +1,7 @@
 package nascence.vm.thrift;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import nascence.vm.VirtualMaterial;
 
@@ -18,9 +19,14 @@ import emInterfaces.*;
 public class VirtualMaterialHandler implements emEvolvableMotherboard.Iface{
 
 	VirtualMaterial vm;
+	Sequence inputSequence;
+	Sequence outputSequence;
+	
 	
 	public VirtualMaterialHandler(VirtualMaterial vm){
 		this.vm = vm;
+		inputSequence = new Sequence();
+		outputSequence = new Sequence();
 	}
 	
 	@Override
@@ -79,13 +85,17 @@ public class VirtualMaterialHandler implements emEvolvableMotherboard.Iface{
 
 	@Override
 	public void clearSequences() throws emException, TException {
-		// TODO Auto-generated method stub
-		
+		inputSequence = new Sequence();
+		outputSequence = new Sequence();
 	}
 
+	/**
+	 * This function replays the sequences to the neural network
+	 * 
+	 */
 	@Override
 	public void runSequences() throws emException, TException {
-		// TODO Auto-generated method stub
+		
 		
 	}
 
