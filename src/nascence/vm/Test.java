@@ -33,7 +33,7 @@ public class Test {
 		 System.out.print(array2[i]+" ");
 	 }*/
 	 VarElman re = new VarElman();
-	 re.genVarElmanRandom(8, 32, 8, 5.0, 0.5, false);
+	 re.genVarElmanRandom(8, 32, 8, 5.0, 0.5, false, true);
 	 array = re.serializeToByteArray();
 	 re.programme(array);
 	 

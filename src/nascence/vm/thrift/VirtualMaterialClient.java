@@ -67,7 +67,7 @@ public class VirtualMaterialClient {
 		System.out.println(client.getMotherboardID()); // get it's ID
 
 		VarElman local = new VarElman(); // generate a RNN locally
-		local.genVarElmanRandom(8, 32, 8, 5.0, 0.5, false); // at random
+		local.genVarElmanRandom(8, 32, 8, 5.0, 0.5, false, true); // at random
 
 		byte[] ar = local.serializeToByteArray(); // get the weights
 		client.reprogramme(ByteBuffer.wrap(ar), ar.length); // programme the

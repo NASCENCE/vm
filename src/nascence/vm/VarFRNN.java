@@ -41,9 +41,13 @@ public class VarFRNN implements VirtualMaterial {
 	 *            execution periods (a list of 1 -> FRNN, non-ones -> ARNN)
 	 */
 	public void genVarFRNNrandom(int nIn, int nNodes, double wRange, double p,
-			boolean isARNN) {
+			boolean isARNN, boolean isRecurrent) {
 		wIn = genWeightMatrix(nNodes, nIn, wRange, p);
-		wRec = genWeightMatrix(nNodes, nNodes, wRange, p);
+		if(isRecurrent){
+			wRec = genWeightMatrix(nNodes, nNodes, wRange, p);
+		}else{
+			wRec = genWeightMatrix(nNodes, nNodes, wRange, 0.0); // zero probability of the connection
+		}
 		wThr = genWeightMatrix(1, nNodes, wRange, p)[0];
 		try {
 			excFns = ExcFnList.genRandomExcFnList(nNodes);

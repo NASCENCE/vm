@@ -34,9 +34,9 @@ public class VarElman extends VirtualMaterialImpl implements VirtualMaterial {
 	double weightNoise=0;
 
 	public void genVarElmanRandom(int nIn, int nNodes, int nOut, double wRange,
-			double p, boolean isARNN) {
+			double p, boolean isARNN, boolean isRecurrent) {
 		varFRNN = new VarFRNN();
-		varFRNN.genVarFRNNrandom(nIn, nNodes, wRange, p, isARNN); 
+		varFRNN.genVarFRNNrandom(nIn, nNodes, wRange, p, isARNN, isRecurrent); 
 																			
 		wOutThr = varFRNN.genWeightMatrix(1, nOut, wRange, p)[0];
 		wOut = varFRNN.genWeightMatrix(nOut, nNodes, wRange, p);

@@ -8,7 +8,13 @@ import org.apache.thrift.TException;
 
 import emInterfaces.*;
 
-
+/**
+ * This class is the wrapper for thevirtual material itself. It maps the function
+ * from the Nascence API to the function of the virtual material virtual class.
+ * 
+ * @author koutnij
+ * 
+ */
 public class VirtualMaterialHandler implements emEvolvableMotherboard.Iface{
 
 	VirtualMaterial vm;
