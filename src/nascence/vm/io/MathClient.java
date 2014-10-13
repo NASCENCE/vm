@@ -18,16 +18,16 @@ import org.apache.thrift.transport.TTransport;
  * 
  * @author koutnij
  *
- * The client purpose is:
- * - to test the VirtualMaterialServer and
- * - to provide a wrapper for Mathematica, which does not have a thrift connector, but can call java methods natively 
+ * Nascence API client for Mathematica
+ * This is a wrapper. A user does not have to assemble all the objects
+ * inside Mathematica.
  */
 
 import emInterfaces.emEvolvableMotherboard;
 import emInterfaces.emSequenceItem;
 import emInterfaces.emWaveForm;
 
-public class VirtualMaterialClient {
+public class MathClient {
 	emEvolvableMotherboard.Client client;
 	TTransport transport;
 
@@ -35,7 +35,7 @@ public class VirtualMaterialClient {
 	 * Constructor that can be called from any other program. Connects to a
 	 * virtual material client and to a log server.
 	 */
-	public VirtualMaterialClient(String url, int portNumber) {
+	public MathClient(String url, int portNumber) {
 		try {
 			transport = new TSocket(url, portNumber);
 			transport.open();
@@ -51,19 +51,11 @@ public class VirtualMaterialClient {
 		transport.close();
 	}
 
-	public static void main(String[] args) {
-		// localhost test
-		VirtualMaterialClient vmc = new VirtualMaterialClient("localhost", 9090);
-		try {
-			vmc.test();
-		} catch (TException e) {
-			e.printStackTrace();
-		}
-
-		vmc.closeConnection();
-
+	public String getMotherboardID(){
+		return client.getMotherboardID();
 	}
-
+	
+	
 	void test() throws TException {
 		client.ping(); // ping the board
 		System.out.println(client.getMotherboardID()); // get it's ID
