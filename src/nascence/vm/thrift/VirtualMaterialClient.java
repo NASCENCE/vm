@@ -23,10 +23,6 @@ import org.apache.thrift.transport.TTransport;
  * - to provide a wrapper for Mathematica, which does not have a thrift connector, but can call java methods natively 
  */
 
-
-
-
-
 import emInterfaces.emEvolvableMotherboard;
 import emInterfaces.emSequenceItem;
 import emInterfaces.emWaveForm;
@@ -50,26 +46,25 @@ public class VirtualMaterialClient {
 			x.printStackTrace();
 		}
 	}
-	public void closeConnection(){
+
+	public void closeConnection() {
 		transport.close();
 	}
-	
+
 	public static void main(String[] args) {
-        // localhost test
-		VirtualMaterialClient vmc = new VirtualMaterialClient("localhost",9090);
-   	    try {
+		// localhost test
+		VirtualMaterialClient vmc = new VirtualMaterialClient("localhost", 9090);
+		try {
 			vmc.test();
 		} catch (TException e) {
-   		    e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		vmc.closeConnection();
-		
-		
+
 	}
 
-	void test()
-			throws TException {
+	void test() throws TException {
 		client.ping(); // ping the board
 		System.out.println(client.getMotherboardID()); // get it's ID
 
@@ -78,44 +73,52 @@ public class VirtualMaterialClient {
 
 		byte[] ar = local.serializeToByteArray(); // get the weights
 		client.reprogramme(ByteBuffer.wrap(ar), ar.length); // prg. the VM
-		
-		/* Now let's play some data through it.
-		 * The VM has 8 inputs and 8 outputs, let's use
-		 * 7 inputs, therefore the 8th pin will be used as an output
-		 * Let's use 2 steps of 7 values.
+
+		/*
+		 * Now let's play some data through it. The VM has 8 inputs and 8
+		 * outputs, let's use 7 inputs, therefore the 8th pin will be used as an
+		 * output Let's use 2 steps of 7 values.
 		 * 
 		 * The example show how to wrap everything in the Nascence API
 		 */
+
 		
-		double[][] data = {{.1,.2,.3,.4,.5,.6,.7,},{.7,.6,.5,.4,.3,.2,.1}};
-		int[] inputPins = {0,1,2,3,4,5,6};
+
+
+
+		client.reprogramme(ByteBuffer.wrap(ar), ar.length);
+
+		double[][] data = { { .1, .2, .3, .4, .5, .6, .7, },
+				{ .7, .6, .5, .4, .3, .2, .1 } };
+		int[] inputPins = { 0, 1, 2, 3, 4, 5, 6 };
 		ArrayList<Integer> pinList = new ArrayList<Integer>();
-		for (int i=0;i<inputPins.length;i++){
+		for (int i = 0; i < inputPins.length; i++) {
 			pinList.add(inputPins[i]);
 		}
-		
+
 		// a helper function that makes waveforms from a raw array (columns)
 		Sequence seq = new Sequence(data, 255, pinList);
 		List<emSequenceItem> items = seq.getThisSequence();
-		
-		client.clearSequences(); //delete existing
-		
+
+		client.clearSequences(); // delete existing
+
 		// push the data into the VM
-		for(emSequenceItem item : items){
+		for (emSequenceItem item : items) {
 			client.appendSequenceAction(item);
 		}
-		
+
+		client.runSequences();
 		client.joinSequences(); // wait for results
-	
-		emWaveForm output = client.getRecording(7); // expect the result on pin 7
-		
+		emWaveForm output = client.getRecording(7); // expect the result on
+													// pin 7
+
 		List<Integer> samples = output.getSamples();
-		
+
 		// print out the samples (integers)
-		for(int s : samples){
-			System.out.print(s+" ");
+		for (int s : samples) {
+			System.out.print(s + " ");
 		}
 		System.out.println();
-		
 	}
+
 }
