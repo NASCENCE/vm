@@ -136,8 +136,8 @@ public class VirtualMaterialHandler implements emEvolvableMotherboard.Iface {
 	@Override
 	public void appendSequenceAction(emSequenceItem Item) throws emException,
 			TException {
-		// TODO Auto-generated method stub
-
+		// here goes the input for the VM
+		inputSequence.addSequenceItem(Item);
 	}
 
 	@Override

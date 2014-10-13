@@ -1,6 +1,7 @@
 package nascence.vm.thrift;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import emInterfaces.emSequenceItem;
@@ -27,8 +28,14 @@ public class Sequence {
 		setFromArray(array, amplitude, usedPins);
 	}
 
+	/**
+	 * Adds an item and recalculates the unusedPins list, such that the VM knows
+	 * which pins to use for input and output.
+	 * @param item
+	 */
 	public void addSequenceItem(emSequenceItem item) {
 		sequence.add(item);
+		updateUnusedPins((int)maxPinNumber());
 	}
 
 	public List<Integer> getUnusedInputPins() {
@@ -175,6 +182,18 @@ public class Sequence {
 		}
 		return maxValue;
 	}
+	
+	long maxPinNumber() {
+		long maxValue = Long.MIN_VALUE;
+		for (emSequenceItem item : sequence) {
+			for(int pin : item.getPin()){
+				if(pin > maxValue){
+					maxValue = pin;
+				}
+			}
+		}
+		return maxValue;
+	}
 
 	/*
 	 * Finds out which pins are not assigned as inputs (zero-columns)
@@ -195,6 +214,25 @@ public class Sequence {
 			}
 		}
 		return pins;
+	}
+	
+	/**
+	 * This examines the inputSequence and updates the list of unused pins.
+	 */
+	public void updateUnusedPins(int nPins){
+		unusedInputPins = new ArrayList<Integer>();
+		
+		BitSet usedPins = new BitSet(nPins);
+		for(emSequenceItem item : sequence){
+			for(int pin : item.getPin()){
+				usedPins.set(pin);
+			}
+		}
+		for(int i=0;i<usedPins.size();i++){
+			if(false==usedPins.get(i)){
+				unusedInputPins.add(i);
+			}
+		}
 	}
 
 	/*
@@ -230,5 +268,8 @@ public class Sequence {
 			}
 			System.out.println();
 		}
+	}
+	public List<emSequenceItem> getThisSequence(){
+		return sequence;
 	}
 }
