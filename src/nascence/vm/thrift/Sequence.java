@@ -35,7 +35,8 @@ public class Sequence {
 	 */
 	public void addSequenceItem(emSequenceItem item) {
 		sequence.add(item);
-		updateUnusedPins((int)(maxPinNumber() + 1));
+		//updateUnusedPins((int)(maxPinNumber() + 1)); 
+		// this should happend before VM is evaluated
 	}
 
 	public List<Integer> getUnusedInputPins() {
@@ -232,7 +233,7 @@ public class Sequence {
 		}
 				
 		for(int i=0;i<usedPins.length;i++){
-			if(1==usedPins[i]){
+			if(0==usedPins[i]){
 				unusedInputPins.add(i);
 			}
 		}

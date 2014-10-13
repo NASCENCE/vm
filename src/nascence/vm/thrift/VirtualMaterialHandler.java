@@ -105,10 +105,13 @@ public class VirtualMaterialHandler implements emEvolvableMotherboard.Iface {
 
 		double[] rawOutput;
 		double[][] inputs = inputSequence.getAsArray(nInputs);
-		List<Integer> unusedPins = inputSequence.getUnusedInputPins(); // output pins
+		
 
 		double[][] outputs = new double[inputs.length][];
-			
+		
+		inputSequence.updateUnusedPins(nInputs);
+		List<Integer> unusedPins = inputSequence.getUnusedInputPins(); // output pins
+		
 		net.setOutputMaskIndices(nOutputs, unusedPins);
 
 		// this needs to go in a thread to be able to wait for the result

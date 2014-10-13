@@ -39,10 +39,8 @@ public class TestHandler {
 				vmh.appendSequenceAction(item);
 			}
 
-			vmh.runSequences();
-			
+			vmh.runSequences();	
 			vmh.joinSequences(); // wait for results
-
 			emWaveForm output = vmh.getRecording(7); // expect the result on
 														// pin 7
 
