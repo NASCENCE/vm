@@ -85,7 +85,7 @@ public class MathClient {
 	 * @throws TException 
 	 * @throws emException 
 	 */
-	void programmeVarElman(double[][] wIn, double[][] wRec, double[] wThr,
+	public void programmeVarElman(double[][] wIn, double[][] wRec, double[] wThr,
 			double[][] wOut, double[] wOutThr, String[] excFnNames,
 			String[] actFnNames, String[] outExcFnNames,
 			String[] OutActFnNames, int[] periods, double[] state,
@@ -101,12 +101,12 @@ public class MathClient {
 
 	}
 
-	void programme(VarElman net, emEvolvableMotherboard.Client cl) throws emException, TException {
+	public void programme(VarElman net, emEvolvableMotherboard.Client cl) throws emException, TException {
 		byte[] ar = net.serializeToByteArray();
 		cl.reprogramme(ByteBuffer.wrap(ar), ar.length);
 	}
 
-	void programmeVarElmanRandom(int nIn, int nNodes, int nOut, double wRange,
+	public void programmeVarElmanRandom(int nIn, int nNodes, int nOut, double wRange,
 			double p, boolean isARNN, boolean isRecurrent) throws emException, TException {
 		VarElman local = new VarElman();
 
@@ -125,7 +125,7 @@ public class MathClient {
 	 * @throws emException 
 	 */
 
-	double[][] evaluateArray(double[][] data, int amplitude, int[] inputPins) throws emException, TException {
+	public double[][] evaluateArray(double[][] data, int amplitude, int[] inputPins) throws emException, TException {
 		ArrayList<Integer> pinList = new ArrayList<Integer>();
 		ArrayList<Integer> pinListOutput = new ArrayList<Integer>();
 
@@ -180,7 +180,7 @@ public class MathClient {
 		return output;
 	}
 
-	void test() throws TException {
+	public void test() throws TException {
 		client.ping(); // ping the board
 		System.out.println(getMotherboardID()); // get it's ID
 		
