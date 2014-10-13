@@ -106,7 +106,7 @@ public class VirtualMaterialClient {
 		}
 		
 		client.joinSequences(); // wait for results
-		
+	
 		emWaveForm output = client.getRecording(7); // expect the result on pin 7
 		
 		List<Integer> samples = output.getSamples();

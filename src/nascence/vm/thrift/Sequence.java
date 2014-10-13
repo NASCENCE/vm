@@ -35,7 +35,7 @@ public class Sequence {
 	 */
 	public void addSequenceItem(emSequenceItem item) {
 		sequence.add(item);
-		updateUnusedPins((int)maxPinNumber());
+		updateUnusedPins((int)(maxPinNumber() + 1));
 	}
 
 	public List<Integer> getUnusedInputPins() {
@@ -222,14 +222,17 @@ public class Sequence {
 	public void updateUnusedPins(int nPins){
 		unusedInputPins = new ArrayList<Integer>();
 		
-		BitSet usedPins = new BitSet(nPins);
+		int[] usedPins = new int[nPins];
+		
+		
 		for(emSequenceItem item : sequence){
 			for(int pin : item.getPin()){
-				usedPins.set(pin);
+				usedPins[pin] = 1;
 			}
 		}
-		for(int i=0;i<usedPins.size();i++){
-			if(false==usedPins.get(i)){
+				
+		for(int i=0;i<usedPins.length;i++){
+			if(1==usedPins[i]){
 				unusedInputPins.add(i);
 			}
 		}
@@ -243,9 +246,10 @@ public class Sequence {
 		// VM stores the pins in order, it searches the first item
 		// it does not store values for multiple pins, so the first 
 		// pin is used
-		int pinIndex =0;
+		int pinIndex = 0;
 		int nItems = sequence.size();
-		while(pin!=(sequence.get(pinIndex)).getPin().get(0) && pinIndex < nItems){
+		while (pin != (sequence.get(pinIndex)).getPin().get(0)
+				&& pinIndex < nItems) {
 			pinIndex++;
 		}
 		
