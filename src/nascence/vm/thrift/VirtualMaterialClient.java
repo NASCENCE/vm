@@ -81,7 +81,7 @@ public class VirtualMaterialClient {
 		 * 
 		 * The example show how to wrap everything in the Nascence API
 		 */
-		client.reprogramme(ByteBuffer.wrap(ar), ar.length);
+		
 
 		double[][] data = { { .1, .2, .3, .4, .5, .6, .7, },
 				{ .7, .6, .5, .4, .3, .2, .1 } };
