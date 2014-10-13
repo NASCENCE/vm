@@ -101,6 +101,10 @@ public class VarFRNN implements VirtualMaterial {
 		this.weightNoise= weightNoise;
 		reset();
 	}
+	
+	public int getNumberOfInputs(){
+		return wIn[0].length;
+	}
 
 	public double[] evalVarFRNN(double[] in, int t) {
 		int nNodes = state.length;

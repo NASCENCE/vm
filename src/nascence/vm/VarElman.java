@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.BitSet;
+import java.util.List;
 
 /**
  * Variable node Elman network. As a virtual material, the network has the same
@@ -31,13 +32,13 @@ public class VarElman extends VirtualMaterialImpl implements VirtualMaterial {
 								// other nodes then, but the user should mask
 								// them with zeroes
 	double[] outputBuffer;
-	double weightNoise=0;
+	double weightNoise = 0;
 
 	public void genVarElmanRandom(int nIn, int nNodes, int nOut, double wRange,
 			double p, boolean isARNN, boolean isRecurrent) {
 		varFRNN = new VarFRNN();
-		varFRNN.genVarFRNNrandom(nIn, nNodes, wRange, p, isARNN, isRecurrent); 
-																			
+		varFRNN.genVarFRNNrandom(nIn, nNodes, wRange, p, isARNN, isRecurrent);
+
 		wOutThr = varFRNN.genWeightMatrix(1, nOut, wRange, p)[0];
 		wOut = varFRNN.genWeightMatrix(nOut, nNodes, wRange, p);
 
@@ -73,6 +74,26 @@ public class VarElman extends VirtualMaterialImpl implements VirtualMaterial {
 		}
 	}
 
+	/**
+	 * This takes a list of indices of pins to be masked
+	 */
+	public void setOutputMaskIndices(int maskLength, List<Integer> maskIndices) {
+		this.outputMask = new BitSet(maskLength);
+		this.outputMask.set(0, maskLength, false);
+
+		for (int i : maskIndices) {
+			this.outputMask.set(i, true);
+		}
+	}
+
+	public int getNumberOfInputs() {
+		return varFRNN.getNumberOfInputs();
+	}
+
+	public int getNumberOfOutputs() {
+		return wOutThr.length;
+	}
+
 	public void clearOutputMask() {
 		outputMask = null;
 	}
@@ -80,7 +101,8 @@ public class VarElman extends VirtualMaterialImpl implements VirtualMaterial {
 	public void initVarElman(double[][] wIn, double[][] wRec, double[] wThr,
 			double[][] wOut, double[] wOutThr, String[] excFnNames,
 			String[] actFnNames, String[] outExcFnNames,
-			String[] OutActFnNames, int[] periods, double[] state, double weightNoise) {
+			String[] OutActFnNames, int[] periods, double[] state,
+			double weightNoise) {
 		varFRNN = new VarFRNN();
 		varFRNN.initVarFRNN(wIn, wRec, wThr, excFnNames, actFnNames, periods,
 				state, weightNoise);
@@ -109,9 +131,9 @@ public class VarElman extends VirtualMaterialImpl implements VirtualMaterial {
 
 		for (int i = 0; i < wOut.length; i++) {
 			for (int j = 0; j < hiddenState.length; j++) {
-				parts[j] = (noise()+wOut[i][j]) * hiddenState[j];
+				parts[j] = (noise() + wOut[i][j]) * hiddenState[j];
 			}
-			parts[hiddenState.length] = noise()+wOutThr[i]; // bias
+			parts[hiddenState.length] = noise() + wOutThr[i]; // bias
 			excitation = outExcFns[i].evalExcitation(parts);
 			activation = outActFns[i].evalActivation(excitation);
 			outputBuffer[i] = activation;
@@ -201,7 +223,7 @@ public class VarElman extends VirtualMaterialImpl implements VirtualMaterial {
 			}
 			outActFns = ActFnList.genActFnList(ind);
 			outputBuffer = new double[wOut.length];
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (SecurityException e) {
@@ -254,7 +276,8 @@ public class VarElman extends VirtualMaterialImpl implements VirtualMaterial {
 			e.printStackTrace();
 		}
 	}
-	public double noise(){
-		return weightNoise*2*Math.random()-1.0;
+
+	public double noise() {
+		return weightNoise * 2 * Math.random() - 1.0;
 	}
 }

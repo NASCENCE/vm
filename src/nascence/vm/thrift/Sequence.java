@@ -10,13 +10,29 @@ import emInterfaces.emWaveFormType;
 
 public class Sequence {
 	ArrayList<emSequenceItem> sequence;
+	List<Integer> unusedInputPins; // = used output pins
 
 	public Sequence() {
 		sequence = new ArrayList<emSequenceItem>();
 	}
 
+	/**
+	 * This is here for reporting the VM output as a sequence
+	 * 
+	 * @param array
+	 * @param amplitude
+	 */
+	public Sequence(double[][] array, int amplitude, List<Integer> usedPins) {
+		this.unusedInputPins = null; // should be a complement to usedPins
+		setFromArray(array, amplitude, usedPins);
+	}
+
 	public void addSequenceItem(emSequenceItem item) {
 		sequence.add(item);
+	}
+
+	public List<Integer> getUnusedInputPins() {
+		return unusedInputPins;
 	}
 
 	/*
@@ -49,7 +65,7 @@ public class Sequence {
 				for (Integer s : samples) {
 					v = (double) s.intValue() / amplitude;
 					for (int p : pins) {
-						result[startTime+sampleIndex][p] = v;
+						result[startTime + sampleIndex][p] = v;
 					}
 					sampleIndex++;
 				}
@@ -64,35 +80,74 @@ public class Sequence {
 
 	/*
 	 * This function generates a sequence containing one item per pin that holds
-	 * the waveforms constructed from the given array.
+	 * the waveforms constructed from the given array. It uses all the pins
 	 */
 	void setFromArray(double[][] array, int amplitude) {
 		sequence = new ArrayList<emSequenceItem>();
+		this.unusedInputPins = unusedPins(array);
 
 		for (int pin = 0; pin < array[0].length; pin++) { // pin, column-wise
 			emSequenceItem item = new emSequenceItem();
 			item.setStartTime(0);
-			item.setEndTime(array.length-1);
+			item.setEndTime(array.length - 1);
 			item.setOperationType(emSequenceOperationType.ARBITRARY);
 			ArrayList<Integer> pins = new ArrayList<Integer>();
 			pins.add(pin);
 			item.setPin(pins); // each pin is a separate item
 			item.setAmplitude(amplitude);
-			
+
 			emWaveForm w = new emWaveForm();
 			w.setSampleCount(array.length);
 			ArrayList<Integer> samples = new ArrayList<Integer>();
-			
+
 			for (int t = 0; t < array.length; t++) { // time
-				samples.add((int)Math.round((double)amplitude * array[t][pin]));
+				samples.add((int) Math
+						.round((double) amplitude * array[t][pin]));
 			}
 			w.setSamples(samples);
-			
+
 			item.setWaveForm(w);
 			item.setWaveFormType(emWaveFormType.ARBITRARY);
 			sequence.add(item);
 		}
-		
+
+	}
+
+	/**
+	 * The same function, but generates the specific pins
+	 * 
+	 * @param array
+	 * @param amplitude
+	 * @param usedPins
+	 */
+	void setFromArray(double[][] array, int amplitude, List<Integer> usedPins) {
+		sequence = new ArrayList<emSequenceItem>();
+
+		for (int pin = 0; pin < array[0].length; pin++) { // pin, column-wise
+			emSequenceItem item = new emSequenceItem();
+			item.setStartTime(0);
+			item.setEndTime(array.length - 1);
+			item.setOperationType(emSequenceOperationType.ARBITRARY);
+			ArrayList<Integer> pins = new ArrayList<Integer>();
+			pins.add(usedPins.get(pin));
+			item.setPin(pins); // each pin is a separate item
+			item.setAmplitude(amplitude);
+
+			emWaveForm w = new emWaveForm();
+			w.setSampleCount(array.length);
+			ArrayList<Integer> samples = new ArrayList<Integer>();
+
+			for (int t = 0; t < array.length; t++) { // time
+				samples.add((int) Math
+						.round((double) amplitude * array[t][pin]));
+			}
+			w.setSamples(samples);
+
+			item.setWaveForm(w);
+			item.setWaveFormType(emWaveFormType.ARBITRARY);
+			sequence.add(item);
+		}
+
 	}
 
 	/*
@@ -121,17 +176,57 @@ public class Sequence {
 		return maxValue;
 	}
 
-	public static void main(String[] arg){
+	/*
+	 * Finds out which pins are not assigned as inputs (zero-columns)
+	 */
+	public List<Integer> unusedPins(double[][] array) {
+		ArrayList<Integer> pins = new ArrayList<Integer>();
+
+		boolean zeroQ = true;
+		for (int p = 0; p < array[0].length; p++) {
+			zeroQ = true;
+			for (int t = 0; t < array.length; t++) {
+				if (array[t][p] != 0.0) {
+					zeroQ = false;
+				}
+			}
+			if (zeroQ) {
+				pins.add(new Integer(p));
+			}
+		}
+		return pins;
+	}
+
+	/*
+	 * This function returns recording for the given pin takes only the first
+	 * item, since VM does not enter more than one waveform.
+	 */
+	public emWaveForm getRecording(int pin) {
+		// VM stores the pins in order, it searches the first item
+		// it does not store values for multiple pins, so the first 
+		// pin is used
+		int pinIndex =0;
+		int nItems = sequence.size();
+		while(pin!=(sequence.get(pinIndex)).getPin().get(0) && pinIndex < nItems){
+			pinIndex++;
+		}
+		
+		emSequenceItem item = sequence.get(pinIndex);
+		return item.getWaveForm();
+
+	}
+
+	public static void main(String[] arg) {
 		Sequence s = new Sequence();
-		double[][] data = {{0.1,1.0},{0.3333,2.0},{0.0,1.0}};
-		
-		s.setFromArray(data,255);
+		double[][] data = { { 0.1, 1.0 }, { 0.3333, 2.0 }, { 0.0, 1.0 } };
+
+		s.setFromArray(data, 255);
 		double[][] ar = s.getAsArray(2);
-		
-		for(int i=0;i<ar.length;i++){
-			for(int j=0;j< ar[0].length;j++){
-				System.out.print(ar[i][j]+" ");
-				
+
+		for (int i = 0; i < ar.length; i++) {
+			for (int j = 0; j < ar[0].length; j++) {
+				System.out.print(ar[i][j] + " ");
+
 			}
 			System.out.println();
 		}
